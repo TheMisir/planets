@@ -72,6 +72,10 @@ export class Game {
   }
 
   remove(object: GameObject) {
+    if (object.dispose) {
+      object.dispose();
+    }
+
     this.objects = this.objects.filter((obj) => obj !== object);
   }
 
@@ -83,7 +87,7 @@ export class Game {
     setInterval(this.fixedUpdateAll, this.fixedDeltaTime);
 
     this.objects.forEach((obj) => {
-      if (obj.active && obj.start) {
+      if (obj.active && obj.enabled && obj.start) {
         obj.start();
       }
     });
@@ -102,7 +106,7 @@ export class Game {
 
     this.objects.forEach((obj) => {
       if (obj.active) {
-        if (obj.update) {
+        if (obj.enabled && obj.update) {
           obj.update();
         }
 
@@ -128,6 +132,7 @@ export class Game {
 
 export class GameObject {
   public active: boolean = true;
+  public enabled: boolean = true;
   public game: Game;
 
   get deltaTime() {
@@ -163,4 +168,10 @@ export class GameObject {
   render?(ctx: CanvasRenderingContext2D): void;
 
   inScene?(camera: Camera): boolean;
+
+  dispose?(): void;
+
+  remove() {
+    this.game.remove(this);
+  }
 }

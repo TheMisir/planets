@@ -80,20 +80,24 @@ export class Planet extends GameObject {
   render(ctx: CanvasRenderingContext2D) {
     const center = this.camera.worldToScreen(this.position);
 
-    ctx.strokeStyle = "#fff";
+    ctx.fillStyle = "#fff";
     ctx.beginPath();
     ctx.arc(center.x, center.y, this.radius * this.camera.zoom, 0, Math.PI * 2);
-    ctx.stroke();
+    ctx.fill();
 
-    const text = `${Math.round(this.velocity.magnitude() * 100) / 100}`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillStyle = "#fff";
-    ctx.font = `${((15 * this.radius) / 50) * this.camera.zoom}px Arial`;
-    ctx.fillText(text, center.x, center.y);
+    const fontSize = 0.4 * this.radius * this.camera.zoom;
+    if (fontSize > 7) {
+      const text = `${Math.round(this.velocity.magnitude() * 10) / 10}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#000";
+      ctx.font = `${fontSize}px Arial`;
+      ctx.fillText(text, center.x, center.y);
+    }
 
     const vp = this.camera.worldToScreen(this.position.add(this.velocity));
-    ctx.strokeStyle = "rgba(255,0,0,1)";
+    ctx.strokeStyle = "#f00";
+    ctx.lineWidth = Math.min(5, this.camera.zoom * 100);
     ctx.beginPath();
     ctx.moveTo(center.x, center.y);
     ctx.lineTo(vp.x, vp.y);
