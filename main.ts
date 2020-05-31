@@ -3,7 +3,7 @@ import { Game, Camera, GameObject } from "./src/game";
 import { Scene } from "./src/scene";
 import { FPSMeter } from "./src/meter";
 
-const G = 50;
+const G = 100;
 
 class Planet extends GameObject {
   radius: number;
@@ -26,17 +26,15 @@ class Planet extends GameObject {
 
   private attract(other: Planet) {
     const r = this.position.distance(other.position);
+
+    /// F = G * (m1 * m2) / r^2
+
     const F = (G * this.mass * other.mass) / r ** 2;
 
-    /// F = m * a
     /// a = F / m
-
-    const a = F / this.mass;
-
-    /// a = v / t
     /// v = a * t
 
-    /// Limit velocity to 100 units
+    const a = F / this.mass;
     const v = a * this.fixedDeltaTime;
 
     const direction = other.position.subtract(this.position);
@@ -89,14 +87,11 @@ class Planet extends GameObject {
     ctx.arc(center.x, center.y, this.radius * this.camera.zoom, 0, Math.PI * 2);
     ctx.stroke();
 
+    const text = `${Math.round(this.velocity.magnitude() * 100) / 100}`;
     ctx.textAlign = "center";
     ctx.fillStyle = "#fff";
     ctx.font = `${15 * this.camera.zoom}px Arial`;
-    ctx.fillText(
-      `${Math.round(this.velocity.magnitude() * 100) / 100}`,
-      center.x,
-      center.y
-    );
+    ctx.fillText(text, center.x, center.y);
 
     const vp = this.camera.worldToScreen(this.position.add(this.velocity));
     ctx.strokeStyle = "rgba(255,0,0,.5)";
@@ -116,7 +111,7 @@ function randomBetween(min: number, max: number) {
 }
 
 const scene = new Scene("#canvas");
-const camera = new Camera(0.003);
+const camera = new Camera(0.001);
 const game = new Game(scene, camera);
 
 scene.ctx.imageSmoothingEnabled = false;
@@ -124,7 +119,7 @@ scene.ctx.imageSmoothingEnabled = false;
 game.add(new FPSMeter());
 
 const galaxySize = 1000000;
-const planetCount = 300;
+const planetCount = 500;
 const planetRadius = () => randomBetween(50, 500);
 const planetMass = () => randomBetween(50, 500) * 100000;
 
