@@ -1,6 +1,7 @@
 import { Vector2 } from "./src/vector";
 import { Game, Camera, GameObject } from "./src/game";
 import { Scene } from "./src/scene";
+import { FPSMeter } from "./src/meter";
 
 const G = 50;
 
@@ -59,16 +60,18 @@ class Planet extends GameObject {
 
   applyCollision() {
     const planets = this.game.children
-      .filter((obj) => obj !== this && "attract" in obj)
+      .filter((obj) => obj !== this && obj instanceof Planet)
       .map((obj) => obj as Planet);
 
     for (let planet of planets) {
-      const direction = planet.position.subtract(this.position);
-      const dist = direction.magnitude() - (planet.radius + this.radius);
+      if (planet.mass < this.mass) {
+        const direction = planet.position.subtract(this.position);
+        const dist = direction.magnitude() - (planet.radius + this.radius);
 
-      if (dist < 0) {
-        const v = direction.normalize().multiply(-dist);
-        planet.position = planet.position.add(v);
+        if (dist < 0) {
+          const v = direction.normalize().multiply(-dist);
+          planet.position = planet.position.add(v);
+        }
       }
     }
   }
@@ -102,6 +105,10 @@ class Planet extends GameObject {
     ctx.lineTo(vp.x, vp.y);
     ctx.stroke();
   }
+
+  inScene(camera: Camera) {
+    return camera.inScreen(camera.worldToScreen(this.position));
+  }
 }
 
 function randomBetween(min: number, max: number) {
@@ -109,29 +116,29 @@ function randomBetween(min: number, max: number) {
 }
 
 const scene = new Scene("#canvas");
-const camera = new Camera(0.05);
+const camera = new Camera(0.003);
 const game = new Game(scene, camera);
 
-const border = 10000;
+scene.ctx.imageSmoothingEnabled = false;
 
-for (let i = 0; i < 50; i++) {
-  const radius = randomBetween(20, 60);
-  const position = new Vector2(
-    randomBetween(-border, border),
-    randomBetween(-border, border)
+game.add(new FPSMeter());
+
+const galaxySize = 1000000;
+const planetCount = 1000;
+const planetRadius = () => randomBetween(50, 500);
+const planetMass = () => randomBetween(50, 500) * 100000;
+
+for (let i = 0; i < planetCount; i++) {
+  game.add(
+    new Planet(
+      new Vector2(
+        randomBetween(-galaxySize, galaxySize),
+        randomBetween(-galaxySize, galaxySize)
+      ),
+      planetRadius(),
+      planetMass()
+    )
   );
-
-  game.add(new Planet(position, radius, 1000000 * radius));
-}
-
-for (let i = 0; i < 10; i++) {
-  const radius = randomBetween(200, 500);
-  const position = new Vector2(
-    randomBetween(-border, border),
-    randomBetween(-border, border)
-  );
-
-  game.add(new Planet(position, radius, 1000000 * radius));
 }
 
 game.start();
@@ -166,7 +173,7 @@ document.onmousedown = (event) => {
 };
 
 document.onmouseup = (event) => {
-  const radius = Math.max(20, Math.min(100, (Date.now() - downAt) / 10));
+  const radius = Math.max(20, Math.min(500, (Date.now() - downAt) / 10));
 
   game.add(
     new Planet(

@@ -18,6 +18,15 @@ export class Camera {
     return point.add(this.position).multiply(this.zoom).add(this.scene.center);
   }
 
+  inScreen(point: Vector2) {
+    return (
+      point.x >= 0 &&
+      point.x <= this.scene.width &&
+      point.y >= 0 &&
+      point.y <= this.scene.height
+    );
+  }
+
   screenToWorld(point: Vector2) {
     return point
       .subtract(this.scene.center)
@@ -88,8 +97,10 @@ export class Game {
           obj.update();
         }
 
-        if (obj.render) {
-          obj.render(this.scene.ctx);
+        if (!obj.inScene || obj.inScene(this.camera)) {
+          if (obj.render) {
+            obj.render(this.scene.ctx);
+          }
         }
       }
     });
@@ -141,4 +152,6 @@ export class GameObject {
   update?(): void;
 
   render?(ctx: CanvasRenderingContext2D): void;
+
+  inScene?(camera: Camera): boolean;
 }
