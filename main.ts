@@ -111,15 +111,13 @@ function randomBetween(min: number, max: number) {
 }
 
 const scene = new Scene("#canvas");
-const camera = new Camera(0.001);
+const camera = new Camera(0.003);
 const game = new Game(scene, camera);
-
-scene.ctx.imageSmoothingEnabled = false;
 
 game.add(new FPSMeter());
 
-const galaxySize = 1000000;
-const planetCount = 500;
+const galaxySize = 500000;
+const planetCount = 300;
 const planetRadius = () => randomBetween(50, 500);
 const planetMass = () => randomBetween(50, 500) * 100000;
 
