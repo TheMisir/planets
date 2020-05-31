@@ -1,6 +1,11 @@
 {
+  "name": "planets",
+  "license": "MIT",
+  "private": true,
+  "version": "0.1.0",
   "devDependencies": {
     "cssnano": "^4.1.10",
+    "parcel": "^1.12.4",
     "typescript": "^3.9.3"
   },
   "scripts": {
