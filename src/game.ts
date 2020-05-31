@@ -3,11 +3,20 @@ import { Scene } from "./scene";
 
 export class Camera {
   private scene: Scene;
-  public zoom: number;
+  private m_zoom: number;
+
+  public get zoom() {
+    return this.m_zoom;
+  }
+
+  public set zoom(value: number) {
+    this.m_zoom = Math.max(0.0005, Math.min(100, value));
+  }
+
   public position = new Vector2(0, 0);
 
   constructor(zoom: number = 1) {
-    this.zoom = zoom;
+    this.m_zoom = zoom;
   }
 
   setScene(scene: Scene) {
