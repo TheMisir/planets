@@ -10,6 +10,6 @@
   },
   "scripts": {
     "start": "parcel watch index.html",
-    "build": "parcel build index.html"
+    "build": "parcel build index.html --public-url ./"
   }
 }
