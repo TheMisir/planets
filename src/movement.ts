@@ -37,13 +37,13 @@ export class Movement extends GameObject {
     const movementSpeed =
       (this.movementSpeed * multipler * this.deltaTime) / this.camera.zoom;
 
-    /// - or [
-    if (this.keys[189] || this.keys[219]) {
+    /// - or [ or NUM -
+    if (this.keys[189] || this.keys[219] || this.keys[109]) {
       this.camera.zoom -= zoomSpeed;
     }
 
-    /// = or ]
-    if (this.keys[187] || this.keys[221]) {
+    /// = or ] or NUM +
+    if (this.keys[187] || this.keys[221] || this.keys[107]) {
       this.camera.zoom += zoomSpeed;
     }
 
