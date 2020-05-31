@@ -9,7 +9,7 @@
     "typescript": "^3.9.3"
   },
   "scripts": {
-    "start": "parcel index.html",
-    "build": "parcel build index.html --public-url ./"
+    "start": "parcel public/index.html",
+    "build": "parcel build public/index.html --public-url ./"
   }
 }

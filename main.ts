@@ -124,7 +124,7 @@ scene.ctx.imageSmoothingEnabled = false;
 game.add(new FPSMeter());
 
 const galaxySize = 1000000;
-const planetCount = 1000;
+const planetCount = 300;
 const planetRadius = () => randomBetween(50, 500);
 const planetMass = () => randomBetween(50, 500) * 100000;
 
