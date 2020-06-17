@@ -9,6 +9,18 @@ export class Planet extends GameObject {
   position: Vector2;
   velocity: Vector2;
 
+  get impulse(): Vector2 {
+    return this.velocity.multiply(this.mass);
+  }
+
+  get volume(): number {
+    return 0.75 * Math.PI * this.radius ** 3;
+  }
+
+  set volume(value: number) {
+    this.radius = Math.pow(value / (0.75 * Math.PI), 1 / 3);
+  }
+
   constructor(
     position: Vector2,
     radius: number,
@@ -50,31 +62,27 @@ export class Planet extends GameObject {
       .map((obj) => obj as Planet);
 
     for (let planet of planets) {
-      planet.attract(this);
+      this.applyCollision(planet);
+      this.attract(planet);
     }
   }
 
-  applyCollision() {
-    const planets = this.game.children
-      .filter((obj) => obj !== this && obj instanceof Planet)
-      .map((obj) => obj as Planet);
+  applyCollision(planet: Planet) {
+    const direction = planet.position.subtract(this.position);
+    const dist = direction.magnitude() - (planet.radius + this.radius);
 
-    for (let planet of planets) {
+    if (dist < -Number.EPSILON) {
       if (planet.mass < this.mass) {
-        const direction = planet.position.subtract(this.position);
-        const dist = direction.magnitude() - (planet.radius + this.radius);
-
-        if (dist < 0) {
-          const v = direction.normalize().multiply(-dist);
-          planet.position = planet.position.add(v);
-        }
+        this.volume += planet.volume;
+        this.mass += planet.mass;
+        
+        planet.remove();
       }
     }
   }
 
   update() {
     this.position = this.position.add(this.velocity.multiply(this.deltaTime));
-    this.applyCollision();
   }
 
   render(ctx: CanvasRenderingContext2D) {

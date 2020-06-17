@@ -15,12 +15,27 @@ export class Vector2 {
     return new Vector2(dx * Math.random(), dy * Math.random());
   }
 
+  copyFrom(v: Vector2) {
+    this.x = v.x;
+    this.y = v.y;
+  }
+
+  set(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+
   clone() {
     return new Vector2(this.x, this.y);
   }
 
   distance(other: Vector2) {
     return this.subtract(other).magnitude();
+  }
+
+  addSelf(other: Vector2) {
+    this.x += other.x;
+    this.y += other.y;
   }
 
   add(other: Vector2) {

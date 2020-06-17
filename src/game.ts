@@ -79,6 +79,18 @@ export class Game {
     this.objects = this.objects.filter((obj) => obj !== object);
   }
 
+  forEach(cb: (object: GameObject) => void, onlyActive = true) {
+    let i = 0;
+
+    while (i < this.objects.length) {
+      const object = this.objects[i];
+      if (!onlyActive || object.active) {
+        cb(object);
+      }
+      i++;
+    }
+  }
+
   start() {
     this.lastTick = Date.now();
     this.fixedUpdateAll = this.fixedUpdateAll.bind(this);
@@ -86,9 +98,9 @@ export class Game {
 
     setInterval(this.fixedUpdateAll, this.fixedDeltaTime);
 
-    this.objects.forEach((obj) => {
-      if (obj.active && obj.enabled && obj.start) {
-        obj.start();
+    this.forEach((obj) => {
+      if (obj.enabled) {
+        obj.start?.apply(obj);
       }
     });
 
@@ -104,16 +116,14 @@ export class Game {
 
     this.scene.clear();
 
-    this.objects.forEach((obj) => {
-      if (obj.active) {
-        if (obj.enabled && obj.update) {
-          obj.update();
-        }
+    this.forEach((obj) => {
+      if (obj.enabled && obj.update) {
+        obj.update();
+      }
 
-        if (!obj.inScene || obj.inScene(this.camera)) {
-          if (obj.render) {
-            obj.render(this.scene.ctx);
-          }
+      if (!obj.inScene || obj.inScene(this.camera)) {
+        if (obj.render) {
+          obj.render(this.scene.ctx);
         }
       }
     });
